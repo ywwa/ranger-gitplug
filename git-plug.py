@@ -7,11 +7,9 @@ class git(Command):
     """:git <command>
 
     """
-    name = 'git'
-    
     modes = {
         'clone': 'URL',
-        'test': 'test'
+        'init': '',
     }
 
     def execute(self):
@@ -22,9 +20,14 @@ class git(Command):
         if self.arg(1) and not URL:
             self.fm.notify("error", bad=True)
            
-        if self.arg(1) and URL:
+        if self.arg(1) == "clone" and URL:
             os.system('git clone {} --quiet'.format(URL))
             self.fm.notify("Done!")
+
+        if self.arg(1) == "init":
+            os.system('git init --quiet')
+            self.fm.notify("Done!")
+
     def tab(self, tabnum):
         return (
             self.start(1) + mode for mode
@@ -32,7 +35,8 @@ class git(Command):
             if mode
         )
 
-
+# NOTES:
+# nothing interesting just my comments 
 # git --> raise error syntax
 # git + tab --> show avaible commands
 # git + <clone> --> raise error, url not defined
