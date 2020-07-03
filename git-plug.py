@@ -1,45 +1,40 @@
 import os
 import ranger.api
 from ranger.api.commands import Command
+import subprocess
+
 
 
 class git(Command):
-    """:git <command>
 
-    """
-    modes = {
-        'clone': 'URL',
-        'init': '',
-    }
+    cmds = 'init status commit push clone'.split()
 
     def execute(self):
+
+        # no command
         if not self.arg(1):
-            self.fm.notify("Usage: git <command>", bad=True)
-        
-        URL = self.arg(2)
-        if self.arg(1) and not URL:
-            self.fm.notify("error", bad=True)
-           
-        if self.arg(1) == "clone" and URL:
-            os.system('git clone {} --quiet'.format(URL))
-            self.fm.notify("Done!")
+            return self.fm.notify("Sytax: git <command>")
 
-        if self.arg(1) == "init":
+        # init
+        if self.arg(1) == self.cmds[0]:
             os.system('git init --quiet')
-            self.fm.notify("Done!")
+            return self.fm.notify("Done!")
 
-    def tab(self, tabnum):
-        return (
-            self.start(1) + mode for mode
-            in sorted(self.modes.keys())
-            if mode
-        )
+        # status
+        if self.arg(1) == self.cmds[1]:
+            outp = subprocess.check_output(['git', 'status']).decode()
+            with open('/tmp/git-plug-outp', 'w') as out:
+                out.write(outp)
+            self.fm.edit_file('/tmp/git-plug-outp')
 
-# NOTES:
-# nothing interesting just my comments 
-# git --> raise error syntax
-# git + tab --> show avaible commands
-# git + <clone> --> raise error, url not defined
-# git + <clone> + <URL> --> clone repo into current path
-#
-#
+        # clone
+        if self.arg(1) == self.cmds[4] and not self.arg(2):
+            return self.fm.notify("Syntax: git clone <URL>")
+
+        if self.arg(1) == self.cmds[4] and self.arg(2):
+            URL = self.arg(2)
+            #useless line
+            self.fm.notify("Cloning into repository: {}".format(URL))
+            os.system("git clone {} --quiet".format(URL))
+            return self.fm.notify("Done!")
+            
