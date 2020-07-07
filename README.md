@@ -1,9 +1,18 @@
-<h1 align="center"> git-plug </h1>
-Simple plugin for ranger
+gitplug
+=======
+git plugin for ranger file manager.
 
-#### Commands:
-* ```git clone <URL>``` - clone repository into new directory
-* ```git init``` - create empty git repository or re-initialize
-* ```git status``` - show working-tree status
-###
-__work in progress__
+#### Working command list:
+* ```:git init```
+* ```:git status```
+* ```:git clone <url>```
+* ```:git add <file>```
+* ```:git rm <file>```
+* ```:git restore <file>``` 
+* ```:git commit <text>``` 
+
+#### TODO:
+- [ ] ```:git push```
+- [ ] ```:git remote```
+- [ ] tabbing
+- [ ] _something more i think_
