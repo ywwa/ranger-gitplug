@@ -108,7 +108,9 @@ class git(Command):
 
         # GIT PUSH
         if self.arg(1) == self.cmds[8]:
+            if self.arg(2) == "-u" and self.arg(3) == "origin" and self.arg(4) == "master":
+                os.system("git push -u origin master --quiet")
+                return self.fm.notify("Done!")
 
-            os.system("git push -u origin master --quiet")
-
+            os.system("git push --quiet")
             return self.fm.notify("Done!")
