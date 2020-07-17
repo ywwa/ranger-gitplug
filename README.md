@@ -2,6 +2,13 @@ gitplug
 =======
 git plugin for ranger file manager.
 
+#### Install:
+```
+git clone https://github.com/yonghie/ranger-gitplug
+cd ranger-gitplug
+make install
+```
+
 #### Working command list:
 * ```:git init```
 * ```:git status```
