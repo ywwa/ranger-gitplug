@@ -9,10 +9,12 @@ git plugin for ranger file manager.
 * ```:git add <file>```
 * ```:git rm <file>```
 * ```:git restore <file>``` 
+* ```:git remote add/rm <name> <url>```
+* ```:git push```
 * ```:git commit <text>``` 
 
 #### TODO:
-- [ ] ```:git push```
-- [ ] ```:git remote```
+- [x] ```:git push```
+- [x] ```:git remote```
 - [ ] tabbing
 - [ ] _something more i think_

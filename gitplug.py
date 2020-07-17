@@ -5,7 +5,7 @@ from ranger.api.commands import Command
 
 class git(Command):
 
-    cmds = 'init status clone add rm restore commit push'.split()
+    cmds = 'init status clone add rm restore commit remote push'.split()
     # git \ git init \ git status \ git clone \ git add \ git rm \ git restore \ git commit \ git push \ 
 
 
@@ -82,5 +82,33 @@ class git(Command):
             #fname = os.path.join(self.fm.thisdir.path, os.path.expanduser(self.rest(2)))
             text = self.rest(2)
             os.system('git commit --quiet -m {}'.format(text))
-            return("Done!")
+            return self.fm.notify("Done!")
 
+
+        # GIT REMOTE
+        if self.arg(1) == self.cmds[7]:
+            
+            # GIT REMOTE ADD <NAME> <URL>
+            if self.arg(2) == "add" and not self.arg(3):
+                return self.fm.notify("Syntax: git remote add <name> <url>")
+                
+            if self.arg(2) == "add" and self.arg(3) and self.arg(4):
+                os.system("git remote add {} {}".format(self.arg(3), self.arg(4)))
+                return self.fm.notify("Done!")
+
+            # GIT REMOTE RM <NAME> 
+            if self.arg(2) == "rm" and self.arg(3):
+                os.system("git remote rm {}".format(self.arg(3)))
+                return self.fm.notify("Done!")
+
+            if self.arg(2) == "rm" and not self.arg(3):
+                return self.fm.notify("Syntax: git remote remove <name>")
+
+            return self.fm.notify("Syntax: git remote add/rm <name> <url>")
+
+        # GIT PUSH
+        if self.arg(1) == self.cmds[8]:
+
+            os.system("git push -u origin master --quiet")
+
+            return self.fm.notify("Done!")
