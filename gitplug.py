@@ -1,116 +1,117 @@
-import os
 import subprocess
 from ranger.api.commands import Command
 
 
 class git(Command):
 
-    cmds = 'init status clone add rm restore commit remote push'.split()
-    # git \ git init \ git status \ git clone \ git add \ git rm \ git restore \ git commit \ git push \ 
+    commands = 'init status clone add rm restore commit remote push'.split()
 
 
     def execute(self):
-        # git 
+        # empty
         if not self.arg(1):
-            return self.fm.notify("Sytax: git <command>")
+            return self.fm.notify("For commands check \"git help\"")
 
-        # git INIT +
-        if self.arg(1) == self.cmds[0]:
-            os.system('git init --quiet')
-            return self.fm.notify("Done!")
+        # help
+        if self.arg(1) == "help":
+            return self.fm.notify("Not done yet!", bad=True)
 
-        # git STATUS +
-        if self.arg(1) == self.cmds[1]:
-            output = subprocess.check_output(['git', 'status']).decode()
-            with open('/tmp/ranger-gitplug-status', 'w') as out:
+        # init
+        if self.arg(1) == self.commands[0]:
+            subprocess.run(["git", "init", "--quiet"])
+            return self.fm.notify("Repository initialized successefully")
+
+        # status
+        if self.arg(1) == self.commands[1]:
+            output = subprocess.check_output(["git", "status"]).decode()
+
+            with open('/tmp/gitplug-status', 'w') as out:
                 out.write(output)
-            return self.fm.edit_file('/tmp/ranger-gitplug-status')
 
-        # git CLONE +
-        # TIP: 
-        #      to clone private repositories you have to store your data
-        #      using <git config> in terminals commandline (not rangers)
+            return self.fm.edit_file('/tmp/gitplug-status')
 
-        if self.arg(1) == self.cmds[2] and not self.arg(2):
-            return self.fm.notify("Syntax: git clone <URL>")
+        # clone
+        # TIP!
+        #       to clone private repositorues you have to store your data
+        #       using: "git config --global credential.helper store" in your
+        #       terminals emulator(not ranger! it will not work!) and then
+        #       do one pull still from terminals emulator and then you can
+        #       clone private repositories from ranger.
+        if self.arg(1) == self.commands[2]:
+            if not self.arg(2):
+                return self.fm.notify("Missing url!", bad=True)
 
-        if self.arg(1) == self.cmds[2] and self.arg(2):
-            URL = self.arg(2)
-            #useless line
-            self.fm.notify("Cloning into repository: {}".format(URL))
-            os.system("git clone {} --quiet".format(URL))
-            return self.fm.notify("Done!")
+            if self.arg(2):
+                subprocess.run(["git", "clone", self.arg(2), "--quiet"])
+                return self.fm.notify("Repository successfully cloned!")
 
-        # git ADD + 
-        if self.arg(1) == self.cmds[3] and not self.arg(2):
-            return self.fm.notify("Syntax: git add <FILE>", bad=True)
+        # add
+        if self.arg(1) == self.commands[3]:
+            if not self.arg(2):
+                return self.fm.notify("Missing arguments! Usage :git add <file>", bad=True)
+
+            if self.arg(2):
+                subprocess.run(["git", "add", self.arg(2)])
+                return self.fm.notify("Successfully added files to branch!")
+
+        #rm
+        if self.arg(1) == self.commands[4]:
+            if not self.arg(2):
+                return self.fm.notify("Missing arguments! Usage :git rm <file>", bad=True)
+
+            if self.arg(2):
+                subprocess.run(["git", "rm", self.arg(2)])
+                return self.fm.notify("Successfully removed files from branch!")
+
+        # restore
+        if self.arg(1) == self.commands[5]:
+            if not self.arg(2):
+                return self.fm.notify("Missing arguments! Usage :git restore <file>", bad=True)
+
+            if self.arg(2):
+                subprocess.run(["git", "restore", "--staged", self.arg(2), "--quiet"])
+                return self.fm.notify("Successfully restored files!")
+
+        # commit
+        if self.arg(1) == self.commands[6]:
+            if not self.rest(2):
+                return self.fm.notify("Missing commit text", bad=True)
+
+            if self.rest(2):
+                subprocess.run(["git", "commit", "-m", self.rest(2), "--quiet"])
+                return self.fm.notify("Successfully commited!")
         
-        if self.arg(1) == self.cmds[3] and self.arg(2):
+        # remote
+        if self.arg(1) == self.commands[7]:
+            if not self.arg(2):
+                return self.fm.notify("Missing arguments! Use: git remote add/rm <name> <url>", bad=True)
 
-            os.system('git add {0}/{1}'.format(self.fm.thisdir.path, self.arg(2)))
+            if self.arg(2) == "add":
+                if not self.arg(3):
+                    return self.fm.notify("Missing name and url!", bad=True)
 
-            return self.fm.notify('Done!')
-        
-        # git RM +
-        if self.arg(1) == self.cmds[4] and not self.arg(2):
-            
-            return self.fm.notify("Syntax: git rm <FILE>", bad=True)
+                if self.arg(3):
+                    if not self.arg(4):
+                        return self.fm.notify("Missing url!", bad=True)
 
-        if self.arg(1) == self.cmds[4] and self.arg(2):
-            
-            os.system('git rm {0}/{1} --quiet'.format(self.fm.thisdir.path, self.arg(2)))
-            
-            return self.fm.notify("Done!")
+                    if self.arg(4):
+                        subprocess.run(["git", "remote", "add", self.arg(3), self.arg(4)])
+                        return self.fm.notify("Remote successfully added!")
 
-        # git RESTORE + 
-        if self.arg(1) == self.cmds[5] and not self.arg(2):
+            if self.arg(2) == "rm":
+                if not self.arg(3):
+                    return self.fm.notify("Missing name!", bad=True)
 
-            return self.fm.notify("Syntax: git restore <FILE>", bad=True)
+                if self.arg(3):
+                    subprocess.run(["git", "remote", "rm", self.arg(3)])
+                    return self.fm.notify("Remote successfully removed")
 
-        if self.arg(1) == self.cmds[5] and self.arg(2):
+        # push
+        if self.arg(1) == self.commands[8]:
+            if self.arg(2) == "-u" and self.arg(3) and self.arg(4):
+                subprocess.run(["git", "push", "--quiet", "-u", self.arg(3), self.arg(4)])
+                return self.fm.notify("Repository successfully pushed")
 
-            os.system('git restore --staged {0}/{1} --quiet'.format(self.fm.thisdir.path, self.arg(2)))
-
-            return self.fm.notify("Done!")
-
-
-        # git COMMIT +
-        if self.arg(1) == self.cmds[6] and not self.arg(2):
-            return self.fm.notify('Syntax: git commit <text>')
-
-        if self.arg(1) == self.cmds[6] and self.rest(2):
-            #fname = os.path.join(self.fm.thisdir.path, os.path.expanduser(self.rest(2)))
-            text = self.rest(2)
-            os.system('git commit --quiet -m {}'.format(text))
-            return self.fm.notify("Done!")
-
-
-        # GIT REMOTE
-        if self.arg(1) == self.cmds[7]:
-            
-            # GIT REMOTE ADD <NAME> <URL>
-            if self.arg(2) == "add" and not self.arg(3):
-                return self.fm.notify("Syntax: git remote add <name> <url>")
-                
-            if self.arg(2) == "add" and self.arg(3) and self.arg(4):
-                os.system("git remote add {} {}".format(self.arg(3), self.arg(4)))
-                return self.fm.notify("Done!")
-
-            # GIT REMOTE RM <NAME> 
-            if self.arg(2) == "rm" and self.arg(3):
-                os.system("git remote rm {}".format(self.arg(3)))
-                return self.fm.notify("Done!")
-
-            if self.arg(2) == "rm" and not self.arg(3):
-                return self.fm.notify("Syntax: git remote remove <name>")
-
-            return self.fm.notify("Syntax: git remote add/rm <name> <url>")
-
-        # GIT PUSH
-        if self.arg(1) == self.cmds[8]:
-            if self.arg(2) == "-u" and self.arg(3) == "origin" and self.arg(4) == "master":
-                os.system("git push -u origin master --quiet")
-                return self.fm.notify("Done!")
-
-            os.system("git push --quiet")
-            return self.fm.notify("Done!")
+            if not self.arg(2):
+                subprocess.run(["git", "push", "--quiet"])
+                return self.fm.notify("Repository successfully pushed")
