@@ -1,5 +1,8 @@
 gitplug
 =======
+### Development will not be continued. Feel free to fork and upgrade.
+
+
 git plugin for ranger file manager.
 
 #### Install:
